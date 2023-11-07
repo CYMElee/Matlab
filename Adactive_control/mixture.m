@@ -1,18 +1,18 @@
-%dynamic is xdot =a^2*sin(x)+u here a is unknow(ground truth a =2)
-%desing control input as u = -k1x-k2x
+%the dynamic xdot = (a^2)*sin(x)+b*cos(x)+u
+%ground truth a = 1, b = 2
 
 %the simulate time is 
 t = [1:1:10000];
 dt = 0.001;
-% control gain k1,k2
-k1=5;
+% control gain k1,k2,and k is using for adaptive
+k1=15;
 k2=10;
+k=k1;
 %ground truth a
-a=2;
-
+a = 2;
+b = 2;
 %initial condiction x(0);
 x=150;
-
 %vector that using plot
 record_xdot=zeros(length(t),1);
 record_u=zeros(length(t),1);
@@ -21,13 +21,14 @@ record_x=zeros(length(t),1);
 %the update term
 state_before=0;
 state_update=0;
+theta_before=0;
+theta_update=0;
 
-
-%High frequency control
-
+%high gain
 for i =1:length(t)
     u=-k1*x-k2*x;
-    xdot=(a^2)*sin(x)+u;
+    record_u(i)=u;
+    xdot=(a^2)*sin(x)+b*cos(x)+u;
     record_xdot(i)=xdot;
     record_u(i)=u;
     record_x(i)=x;
@@ -59,8 +60,8 @@ hold on;
 plot(t,record_xdot,'-m','LineWidth',3);
 title("high gain");
 xlabel('Time');
-xlim([0 100]);
-ylim([-500 150]);
+xlim([0 400]);
+ylim([-4000 150]);
 legend('X',"Xd");
 hold off;
 
@@ -73,9 +74,10 @@ state_before = 0;
 state_update = 0;
 for i =1:length(t)
     u=-k1*x-k2*sign(x);
-    xdot=(a^2)*sin(x)+u;
+    xdot=(a^2)*sin(x)+b*cos(x)+u;
     record_xdot(i)=xdot;
     record_u(i)=u;
+    record_x(i)=x;
     state_before=x;
     state_update=state_before+xdot*dt;
     x=state_update;    
@@ -105,8 +107,8 @@ hold on;
 plot(t,record_xdot,'-m','LineWidth',3);
 title("high frequency");
 xlabel('Time');
-xlim([0 100]);
-ylim([-500 150]);
+xlim([0 400]);
+ylim([-2500 150]);
 legend('X',"Xd");
 hold off;
 
@@ -119,14 +121,18 @@ state_before=0;
 state_update=0;
 theta_before=0;
 theta_update=0;
+apha_before=0;
+apha_update=0;
 %defing theta_estimate assume the initial_condiction of theta_hat is 0;
 theta_hat = 0;
+apha_hat =0;
 % let a^2 =theta
 theta = a^2;
+apha = b;
 %design theta_hat_dot as x*sin(x)
 for i =1:length(t)
-    u=-theta_hat*sin(x)-k1*x;
-    xdot=(theta)*sin(x)+u;
+    u=-theta_hat*sin(x)-apha_hat*cos(x)-k1*x;
+    xdot=(theta)*sin(x)+apha_hat*cos(x)+u;
     record_xdot(i)=xdot;
     record_u(i)=u;
     record_x(i)=x;
@@ -139,6 +145,11 @@ for i =1:length(t)
     theta_before = theta_hat;
     theta_update = theta_before + x*sin(x)*dt;
     theta_hat = theta_update;
+    % renew apha_hat
+    apha_before = apha_hat;
+    apha_update = apha_before + x*cos(x)*dt;
+    apha_hat = apha_update;
+    
     
 end
 %plot 1
@@ -148,15 +159,15 @@ plot(t,record_u,'--r','LineWidth',3);
 xlabel('Time');
 ylabel('control input');
 legend("high_gain_u","high_freq_u","adaptive_u");
-xlim([0 100]);
-ylim([-500 150]);
+xlim([0 650]);
+ylim([-2500 10]);
 hold off;
 subplot(3,1,2);
 plot(t,record_x,'--r','LineWidth',3);
 xlabel('Time');
 ylabel('tracking errors');
-xlim([0 100]);
-ylim([-500 150]);
+xlim([0 500]);
+ylim([-50 200]);
 legend("high_gain_e","high_freq_e","adaptive_e");
 hold off;
 
@@ -168,10 +179,8 @@ hold on;
 plot(t,record_xdot,'-m','LineWidth',3);
 title("adaptive control");
 xlabel('Time');
-xlim([0 100]);
-ylim([-500 150]);
+xlim([0 400]);
+ylim([-2500 150]);
 legend('X',"Xd");
 hold off;
-
-
 

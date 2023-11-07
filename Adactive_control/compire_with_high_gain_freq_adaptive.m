@@ -26,6 +26,7 @@ state_update=0;
 
 for i =1:length(t)
     u=-k1*x-k2*x;
+    record_u(i)=u;
     xdot=(a^2)*sin(x)+u;
     record_xdot(i)=xdot;
     record_u(i)=u;

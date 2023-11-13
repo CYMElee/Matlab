@@ -1,3 +1,4 @@
+clear all, close all , clc
 %dynamic is xdot =a^2*sin(x)+u here a is unknow(ground truth a =2)
 %desing control input as u = -k1x-k2x
 

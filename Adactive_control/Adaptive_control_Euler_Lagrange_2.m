@@ -1,3 +1,4 @@
+
 clear all, close all , clc
 %simulation time 10s
 t=[1:1:10000];
@@ -9,6 +10,7 @@ m = 2;
 l = 1;
 a = 1;
 k = 3;
+M = 3;
 %the desire q,qd_d,qd_dd
 qd =1;
 qd_d =0;
@@ -62,7 +64,7 @@ for i=1:length(t)
     
     Y = [(qd_dd + (a*e_d)); g*sin(q)];
     T=(Y')*theta_hat+k*r;
-    q_dd =-g*l*sin(q)+T/m;
+    q_dd =(T-M*sin(q))/m;
     q_d = q_d+(q_dd*dt);
     q = q + (q_d*dt);
     theta_hat = theta_hat+(gama*Y*r)*dt;
@@ -77,5 +79,4 @@ legend('q',"qd");
 xlim([0 10]);
 ylim([0 3]);
 hold off;
-
 

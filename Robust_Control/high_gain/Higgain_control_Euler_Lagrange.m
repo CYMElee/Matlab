@@ -8,14 +8,16 @@ g = 9.81;
 m = 2;
 l = 1;
 a = 1;
-k = 3;
+k = 5;
+k2 =20;
+c1 = 5;
 %the desire q,qd_d,qd_dd
-qd =1;
+qd = 0;
 qd_d =0;
 qd_dd = 0;
-% the theta & gama term
-theta_hat = [2 ; 2];
-gama = [1 0;0 1];
+
+
+
 % the error term
 e = 0;
 e_d =0;
@@ -42,30 +44,19 @@ record_qd = zeros(length(t),1);
 for i=1:length(t)
     record_q(i) = q;
     record_qd(i) =qd;
-    
     old_qd =qd;
     new_qd = sin(i*dt)+cos((i*dt)/2); 
     qd=new_qd;
-    
     old_qd_d = qd_d;
     new_qd_d = (new_qd-old_qd)/dt;
     qd_d = new_qd_d;
-    
-    qd_dd = (new_qd_d-old_qd_d)/dt;
-
-    
     e = (qd-q);
     e_d =(qd_d-q_d);
-    
-    
     r = e_d+a*e;
-    
-    Y = [(qd_dd + (a*e_d)); g*sin(q)];
-    T=(Y')*theta_hat+k*r;
+    T=k*r+k2*c1*r;
     q_dd =-g*l*sin(q)+T/m;
     q_d = q_d+(q_dd*dt);
     q = q + (q_d*dt);
-    theta_hat = theta_hat+(gama*Y*r)*dt;
   
 end
 
@@ -77,5 +68,3 @@ legend('q',"qd");
 xlim([0 10]);
 ylim([0 3]);
 hold off;
-
-

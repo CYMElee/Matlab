@@ -20,7 +20,7 @@ qd_dd = 0;
 
 
 % the error term
-e = 0;
+e = -2;
 e_d =0;
 e_dd = 0;
 r = 0;
@@ -41,10 +41,11 @@ new_q_d = 0;
 %record
 record_q = zeros(length(t),1);
 record_qd = zeros(length(t),1);
-
+record_e = zeros(length(t),1);
 for i=1:length(t)
     record_q(i) = q;
     record_qd(i) =qd;
+    record_e(i) =e;
     old_qd =qd;
     new_qd = sin(i*dt)+cos((i*dt)/2); 
     qd=new_qd;
@@ -61,11 +62,21 @@ for i=1:length(t)
   
 end
 
-
-plot(t_plot,record_q,'-m','LineWidth',3);
+tiledlayout(2,1);
+nexttile
+plot(t_plot,record_q,'-g','LineWidth',3);
+title("Desire vs Measure");
 hold on;
 plot(t_plot,record_qd,':b','LineWidth',3);
 legend('q',"qd");
 xlim([0 10]);
-ylim([0 3]);
+ylim([-10 10]);
+xlabel('Time');
+ylabel('Response');
 hold off;
+nexttile
+plot(t_plot,record_e,'-g','LineWidth',3);
+title("Error");
+legend('e');
+xlabel('Time');
+ylabel('error');
